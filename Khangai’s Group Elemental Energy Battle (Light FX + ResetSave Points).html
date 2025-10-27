@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Khangai's Group: Elemental Energy Battle</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: radial-gradient(circle at center, #000 50%, #080808);
+      color: white;
+      overflow-x: hidden;
+    }
+
+    header {
+      text-align: center;
+      padding: 30px;
+      background: linear-gradient(90deg, #b30000, #009933, #0066ff);
+      animation: glow 3s infinite alternate;
+    }
+
+    @keyframes glow {
+      0% { box-shadow: 0 0 20px #ff0000; }
+      50% { box-shadow: 0 0 20px #00ff66; }
+      100% { box-shadow: 0 0 20px #00bfff; }
+    }
+
+    header h1 {
+      font-size: 2.8em;
+      margin: 0;
+      text-transform: uppercase;
+      text-shadow: 0 0 15px #fff;
+    }
+
+    .arena {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      padding: 40px 20px;
+    }
+
+    .team {
+      width: 28%;
+      min-width: 250px;
+      border-radius: 20px;
+      padding: 25px;
+      text-align: center;
+      transition: transform 0.3s;
+    }
+
+    .team:hover {
+      transform: scale(1.05);
+    }
+
+    .red { border: 2px solid #ff1a1a; background: rgba(255, 0, 0, 0.1); box-shadow: 0 0 20px #ff0000; }
+    .green { border: 2px solid #00ff66; background: rgba(0, 255, 0, 0.1); box-shadow: 0 0 20px #00ff66; }
+    .blue { border: 2px solid #00bfff; background: rgba(0, 128, 255, 0.1); box-shadow: 0 0 20px #00bfff; }
+
+    .team h2 { font-size: 1.8em; margin-bottom: 15px; }
+
+    .scoreboard {
+      text-align: center;
+      margin-top: 30px;
+      padding: 20px;
+      border: 2px solid #555;
+      border-radius: 10px;
+      width: 80%;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      background: rgba(255,255,255,0.05);
+    }
+
+    .scores {
+      display: flex;
+      justify-content: space-around;
+      font-size: 1.3em;
+    }
+
+    .red-score { color: #ff4d4d; }
+    .green-score { color: #00ff99; }
+    .blue-score { color: #66b3ff; }
+
+    .winner {
+      font-size: 1.8em;
+      text-align: center;
+      margin-top: 25px;
+      text-shadow: 0 0 20px gold;
+    }
+
+    .battle-btn, .reset-btn {
+      display: block;
+      margin: 20px auto;
+      background: linear-gradient(90deg, #ff0000, #00ff66, #00bfff);
+      color: #fff;
+      font-size: 1.2em;
+      font-weight: bold;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 0 20px #fff;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .battle-btn:hover, .reset-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 30px gold;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: #111;
+      color: #ccc;
+      border-top: 2px solid #333;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="fxCanvas"></canvas>
+  <header>
+    <h1>Khangai's Group: Elemental Energy Battle</h1>
+    <p>⚔️ Đại chiến giữa ba đội mạnh nhất ⚔️</p>
+  </header>
+
+  <div class="arena">
+    <div class="team red">
+      <h2>🔥 Team Red</h2>
+      <p>Sức mạnh của ngọn lửa</p>
+    </div>
+
+    <div class="team green">
+      <h2>🌿 Team Green</h2>
+      <p>Sức mạnh của tự nhiên</p>
+    </div>
+
+    <div class="team blue">
+      <h2>🌊 Team Blue</h2>
+      <p>Sức mạnh của nước & trí tuệ</p>
+    </div>
+  </div>
+
+  <div class="scoreboard">
+    <h3>Bảng điểm</h3>
+    <div class="scores">
+      <div class="red-score">Đỏ 🔥: <span id="redScore">0</span></div>
+      <div class="green-score">Xanh lá 🌿: <span id="greenScore">0</span></div>
+      <div class="blue-score">Xanh dương 🌊: <span id="blueScore">0</span></div>
+    </div>
+  </div>
+
+  <div class="winner" id="winnerText">Chưa có đội thắng...</div>
+
+  <button class="battle-btn" onclick="startBattle()">🚀 BẮT ĐẦU TRẬN ĐẤU</button>
+  <button class="reset-btn" onclick="resetScores()">🔁 RESET BẢNG ĐIỂM</button>
+
+  <footer>
+    © 2025 Khangai's Group | Red vs Green vs Blue
+  </footer>
+
+  <script>
+    const redScoreEl = document.getElementById("redScore");
+    const greenScoreEl = document.getElementById("greenScore");
+    const blueScoreEl = document.getElementById("blueScore");
+    const winnerText = document.getElementById("winnerText");
+    const canvas = document.getElementById("fxCanvas");
+    const ctx = canvas.getContext("2d");
+
+    let red = parseInt(localStorage.getItem("redScore")) || 0;
+    let green = parseInt(localStorage.getItem("greenScore")) || 0;
+    let blue = parseInt(localStorage.getItem("blueScore")) || 0;
+
+    redScoreEl.textContent = red;
+    greenScoreEl.textContent = green;
+    blueScoreEl.textContent = blue;
+
+    const sounds = {
+      red: new Audio("https://cdn.pixabay.com/download/audio/2021/09/30/audio_95e8d42a9f.mp3?filename=fireball-1.mp3"),
+      green: new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_fae34db747.mp3?filename=wind-blow-1.mp3"),
+      blue: new Audio("https://cdn.pixabay.com/download/audio/2022/02/03/audio_90a96f4c02.mp3?filename=water-splash-1.mp3")
+    };
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    function startBattle() {
+      const winner = Math.floor(Math.random() * 3);
+      let color;
+
+      if (winner === 0) {
+        red++; color = "red";
+        winnerText.innerHTML = "🔥 Team Red thắng!";
+        playEffect("red");
+      } else if (winner === 1) {
+        green++; color = "green";
+        winnerText.innerHTML = "🌿 Team Green thắng!";
+        playEffect("green");
+      } else {
+        blue++; color = "blue";
+        winnerText.innerHTML = "🌊 Team Blue thắng!";
+        playEffect("blue");
+      }
+
+      redScoreEl.textContent = red;
+      greenScoreEl.textContent = green;
+      blueScoreEl.textContent = blue;
+
+      localStorage.setItem("redScore", red);
+      localStorage.setItem("greenScore", green);
+      localStorage.setItem("blueScore", blue);
+    }
+
+    function resetScores() {
+      red = green = blue = 0;
+      redScoreEl.textContent = greenScoreEl.textContent = blueScoreEl.textContent = 0;
+      winnerText.textContent = "Chưa có đội thắng...";
+      localStorage.clear();
+    }
+
+    function playEffect(color) {
+      const particles = [];
+      const count = 40;
+      sounds[color].currentTime = 0;
+      sounds[color].play();
+
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height / 2,
+          size: Math.random() * 4 + 2,
+          speedY: Math.random() * 3 + 1,
+          color: color === "red" ? "#ff5555" : color === "green" ? "#66ff99" : "#66ccff"
+        });
+      }
+
+      let duration = 80;
+      const interval = setInterval(() => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          ctx.beginPath();
+          ctx.fillStyle = p.color;
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fill();
+          p.y += p.speedY;
+        });
+        duration--;
+        if (duration <= 0) {
+          clearInterval(interval);
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }, 30);
+    }
+  </script>
+</body>
+</html>

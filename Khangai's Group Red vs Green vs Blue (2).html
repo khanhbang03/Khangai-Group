@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Khangai's Group: Red vs Green vs Blue</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: radial-gradient(circle at center, #000 50%, #050505);
+      color: white;
+      overflow-x: hidden;
+    }
+
+    header {
+      text-align: center;
+      padding: 30px;
+      background: linear-gradient(90deg, #b30000, #009933, #0066ff);
+      animation: glow 3s infinite alternate;
+    }
+
+    @keyframes glow {
+      0% { box-shadow: 0 0 20px #ff0000; }
+      50% { box-shadow: 0 0 20px #00ff66; }
+      100% { box-shadow: 0 0 20px #00bfff; }
+    }
+
+    header h1 {
+      font-size: 2.8em;
+      margin: 0;
+      text-transform: uppercase;
+      text-shadow: 0 0 15px #fff;
+    }
+
+    header p {
+      font-size: 1.1em;
+      color: #ddd;
+    }
+
+    .arena {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      padding: 40px 20px;
+    }
+
+    .team {
+      width: 28%;
+      min-width: 250px;
+      border-radius: 20px;
+      padding: 25px;
+      text-align: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .team:hover {
+      transform: scale(1.05);
+    }
+
+    .red { border: 2px solid #ff1a1a; background: rgba(255,0,0,0.1); box-shadow: 0 0 20px #ff0000; }
+    .green { border: 2px solid #00ff66; background: rgba(0,255,0,0.1); box-shadow: 0 0 20px #00ff66; }
+    .blue { border: 2px solid #00bfff; background: rgba(0,128,255,0.1); box-shadow: 0 0 20px #00bfff; }
+
+    .team h2 { font-size: 1.8em; margin-bottom: 10px; }
+    .score { font-size: 2em; font-weight: bold; margin-top: 10px; }
+
+    .members {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .card {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid #666;
+      border-radius: 10px;
+      padding: 15px;
+      width: 120px;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 15px white;
+    }
+
+    .vs {
+      text-align: center;
+      font-size: 3em;
+      font-weight: bold;
+      color: gold;
+      text-shadow: 0 0 20px yellow;
+      animation: pulse 2s infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { opacity: 0.7; }
+      to { opacity: 1; transform: scale(1.1); }
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: #111;
+      color: #ccc;
+      border-top: 2px solid #333;
+    }
+
+    .battle-btn {
+      display: block;
+      margin: 40px auto;
+      background: linear-gradient(90deg, #ff0000, #00ff66, #00bfff);
+      color: #fff;
+      font-size: 1.2em;
+      font-weight: bold;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 0 20px #fff;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .battle-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 30px gold;
+    }
+
+    #winner {
+      text-align: center;
+      font-size: 1.8em;
+      font-weight: bold;
+      color: gold;
+      text-shadow: 0 0 20px orange;
+      margin-top: 20px;
+      min-height: 40px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Khangai's Group: Red vs Green vs Blue</h1>
+    <p>⚔️ Cuộc đại chiến 3 đội mạnh nhất – Sức mạnh, Trí tuệ, và Tinh thần ⚔️</p>
+  </header>
+
+  <div class="arena">
+    <div class="team red">
+      <h2>🔥 Team Red</h2>
+      <div class="score" id="score-red">0</div>
+      <div class="members">
+        <div class="card"><h3>Khangai</h3><p>Lãnh đạo ngọn lửa</p></div>
+        <div class="card"><h3>Bang</h3><p>Sức nóng bất diệt</p></div>
+        <div class="card"><h3>Mrudav</h3><p>Chiến thuật rực cháy</p></div>
+        <div class="card"><h3>Ali</h3><p>Tia sáng đỏ</p></div>
+      </div>
+    </div>
+
+    <div class="team green">
+      <h2>🌿 Team Green</h2>
+      <div class="score" id="score-green">0</div>
+      <div class="members">
+        <div class="card"><h3>Khangai</h3><p>Thủ lĩnh tự nhiên</p></div>
+        <div class="card"><h3>Bang</h3><p>Năng lượng rừng già</p></div>
+        <div class="card"><h3>Mrudav</h3><p>Trí tuệ hòa hợp</p></div>
+        <div class="card"><h3>Ali</h3><p>Sức mạnh sinh trưởng</p></div>
+      </div>
+    </div>
+
+    <div class="team blue">
+      <h2>🌊 Team Blue</h2>
+      <div class="score" id="score-blue">0</div>
+      <div class="members">
+        <div class="card"><h3>Khangai</h3><p>Lãnh đạo sóng nước</p></div>
+        <div class="card"><h3>Bang</h3><p>Tinh thần đại dương</p></div>
+        <div class="card"><h3>Mrudav</h3><p>Chiến lược lạnh lùng</p></div>
+        <div class="card"><h3>Ali</h3><p>Sức mạnh ngọn sóng</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="vs">⚡ VS ⚡</div>
+
+  <button class="battle-btn" onclick="startBattle()">🚀 BẮT ĐẦU TRẬN ĐẤU</button>
+
+  <div id="winner"></div>
+
+  <footer>
+    © 2025 Khangai's Group. Red vs Green vs Blue – Unity through Rivalry.
+  </footer>
+
+  <script>
+    let scores = { red: 0, green: 0, blue: 0 };
+
+    function startBattle() {
+      // Randomly pick a winner
+      const teams = ['red', 'green', 'blue'];
+      const winner = teams[Math.floor(Math.random() * teams.length)];
+
+      // Update score
+      scores[winner]++;
+      document.getElementById(`score-${winner}`).textContent = scores[winner];
+
+      // Display winner text
+      const winnerNames = {
+        red: "🔥 Team Red chiến thắng!",
+        green: "🌿 Team Green chiến thắng!",
+        blue: "🌊 Team Blue chiến thắng!"
+      };
+
+      const winnerText = document.getElementById('winner');
+      winnerText.textContent = winnerNames[winner];
+      winnerText.style.textShadow = `0 0 30px ${
+        winner === 'red' ? 'red' : winner === 'green' ? 'lime' : 'aqua'
+      }`;
+
+      // Flash background color for the winning team
+      document.body.style.transition = "background 0.5s";
+      document.body.style.background = 
+        winner === 'red' ? "radial-gradient(circle, #330000, #000)" :
+        winner === 'green' ? "radial-gradient(circle, #002200, #000)" :
+        "radial-gradient(circle, #001133, #000)";
+    }
+  </script>
+</body>
+</html>

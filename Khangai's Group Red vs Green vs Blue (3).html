@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Khangai's Group: Red vs Green vs Blue</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: radial-gradient(circle at center, #000 50%, #050505);
+      color: white;
+      overflow-x: hidden;
+    }
+
+    header {
+      text-align: center;
+      padding: 30px;
+      background: linear-gradient(90deg, #b30000, #009933, #0066ff);
+      animation: glow 3s infinite alternate;
+    }
+
+    @keyframes glow {
+      0% { box-shadow: 0 0 20px #ff0000; }
+      50% { box-shadow: 0 0 20px #00ff66; }
+      100% { box-shadow: 0 0 20px #00bfff; }
+    }
+
+    header h1 {
+      font-size: 2.8em;
+      margin: 0;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-shadow: 0 0 15px #fff;
+    }
+
+    .arena {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      padding: 40px 20px;
+    }
+
+    .team {
+      width: 28%;
+      min-width: 250px;
+      border-radius: 20px;
+      padding: 25px;
+      text-align: center;
+      transition: transform 0.3s;
+    }
+
+    .team:hover {
+      transform: scale(1.05);
+    }
+
+    .red { border: 2px solid #ff1a1a; background: rgba(255, 0, 0, 0.1); box-shadow: 0 0 20px #ff0000; }
+    .green { border: 2px solid #00ff66; background: rgba(0, 255, 0, 0.1); box-shadow: 0 0 20px #00ff66; }
+    .blue { border: 2px solid #00bfff; background: rgba(0, 128, 255, 0.1); box-shadow: 0 0 20px #00bfff; }
+
+    .team h2 { font-size: 1.8em; margin-bottom: 15px; }
+
+    .members {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .card {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid #666;
+      border-radius: 10px;
+      padding: 15px;
+      width: 120px;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 15px white;
+    }
+
+    .scoreboard {
+      text-align: center;
+      margin-top: 30px;
+      padding: 20px;
+      border: 2px solid #555;
+      border-radius: 10px;
+      width: 80%;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      background: rgba(255,255,255,0.05);
+    }
+
+    .scoreboard h3 {
+      font-size: 1.5em;
+      margin-bottom: 10px;
+    }
+
+    .scores {
+      display: flex;
+      justify-content: space-around;
+      font-size: 1.3em;
+    }
+
+    .red-score { color: #ff4d4d; }
+    .green-score { color: #00ff99; }
+    .blue-score { color: #66b3ff; }
+
+    .battle-btn {
+      display: block;
+      margin: 40px auto;
+      background: linear-gradient(90deg, #ff0000, #00ff66, #00bfff);
+      color: #fff;
+      font-size: 1.2em;
+      font-weight: bold;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 0 20px #fff;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .battle-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 30px gold;
+    }
+
+    .winner {
+      font-size: 1.8em;
+      text-align: center;
+      margin-top: 25px;
+      text-shadow: 0 0 20px gold;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: #111;
+      color: #ccc;
+      border-top: 2px solid #333;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Khangai's Group: Red vs Green vs Blue</h1>
+    <p>⚔️ Đại chiến giữa ba đội mạnh nhất ⚔️</p>
+  </header>
+
+  <div class="arena">
+    <div class="team red">
+      <h2>🔥 Team Red</h2>
+      <div class="members">
+        <div class="card"><h3>Khangai</h3><p>Lửa chiến đấu</p></div>
+        <div class="card"><h3>Bang</h3><p>Nhiệt huyết</p></div>
+        <div class="card"><h3>Mrudav</h3><p>Chiến thuật lửa</p></div>
+      </div>
+    </div>
+
+    <div class="team green">
+      <h2>🌿 Team Green</h2>
+      <div class="members">
+        <div class="card"><h3>Khangai</h3><p>Sức mạnh thiên nhiên</p></div>
+        <div class="card"><h3>Bang</h3><p>Sự sống</p></div>
+        <div class="card"><h3>Mrudav</h3><p>Chiến lược rừng xanh</p></div>
+      </div>
+    </div>
+
+    <div class="team blue">
+      <h2>🌊 Team Blue</h2>
+      <div class="members">
+        <div class="card"><h3>Khangai</h3><p>Sóng trí tuệ</p></div>
+        <div class="card"><h3>Bang</h3><p>Sự điềm tĩnh</p></div>
+        <div class="card"><h3>Mrudav</h3><p>Chiến thuật băng giá</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scoreboard">
+    <h3>Bảng điểm</h3>
+    <div class="scores">
+      <div class="red-score">Đỏ 🔥: <span id="redScore">0</span></div>
+      <div class="green-score">Xanh lá 🌿: <span id="greenScore">0</span></div>
+      <div class="blue-score">Xanh dương 🌊: <span id="blueScore">0</span></div>
+    </div>
+  </div>
+
+  <div class="winner" id="winnerText">Chưa có đội thắng...</div>
+
+  <button class="battle-btn" onclick="startBattle()">🚀 BẮT ĐẦU TRẬN ĐẤU</button>
+
+  <footer>
+    © 2025 Khangai's Group | Red vs Green vs Blue
+  </footer>
+
+  <script>
+    let red = 0, green = 0, blue = 0;
+
+    function startBattle() {
+      const winner = Math.floor(Math.random() * 3); // 0, 1, 2
+
+      if (winner === 0) {
+        red++;
+        document.getElementById("winnerText").innerHTML = "🔥 Team Red thắng!";
+      } else if (winner === 1) {
+        green++;
+        document.getElementById("winnerText").innerHTML = "🌿 Team Green thắng!";
+      } else {
+        blue++;
+        document.getElementById("winnerText").innerHTML = "🌊 Team Blue thắng!";
+      }
+
+      document.getElementById("redScore").textContent = red;
+      document.getElementById("greenScore").textContent = green;
+      document.getElementById("blueScore").textContent = blue;
+    }
+  </script>
+</body>
+</html>

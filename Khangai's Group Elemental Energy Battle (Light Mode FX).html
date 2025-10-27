@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Khangai's Group: Elemental Energy Battle (Light Mode FX)</title>
+  <style>
+    :root{
+      --bg:#050505;
+      --panel: rgba(255,255,255,0.04);
+      --accent-red: #ff4d4d;
+      --accent-green: #60ff88;
+      --accent-blue: #66cfff;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Inter, Poppins, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: radial-gradient(circle at 30% 20%, #0b0b0b 0%, #070707 50%, #050505 100%);
+      color: #eaeaea;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      overflow-x:hidden;
+    }
+    header{
+      text-align:center;
+      padding:28px 16px;
+      background: linear-gradient(90deg,#b30000,#009933,#0066ff);
+      box-shadow: 0 6px 24px rgba(0,0,0,0.6);
+    }
+    header h1{
+      margin:0;
+      font-size: clamp(20px,3.2vw,34px);
+      letter-spacing:2px;
+      text-transform:uppercase;
+      color:white;
+      text-shadow:0 0 10px rgba(255,255,255,0.08);
+    }
+    header p{margin:6px 0 0; color:#f0f0f0; opacity:0.9}
+    .arena{
+      display:flex;
+      gap:18px;
+      justify-content:space-around;
+      flex-wrap:wrap;
+      padding:28px 18px;
+      position:relative;
+      min-height:320px;
+    }
+    .team{
+      width:28%;
+      min-width:230px;
+      background:var(--panel);
+      border-radius:14px;
+      padding:18px;
+      text-align:center;
+      transition:transform .25s ease, box-shadow .25s ease;
+      position:relative;
+      z-index:2;
+    }
+    .team:hover{transform:translateY(-6px); box-shadow:0 10px 30px rgba(0,0,0,0.6)}
+    .team h2{margin:0 0 10px; font-size:20px}
+    .members{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+    .card{width:110px;background:rgba(255,255,255,0.02);border-radius:8px;padding:10px;border:1px solid rgba(255,255,255,0.03)}
+    .scoreboard{
+      margin:18px auto 10px;
+      width:min(860px,94%);
+      background:rgba(255,255,255,0.03);
+      border-radius:10px;
+      padding:12px 14px;
+      text-align:center;
+      border:1px solid rgba(255,255,255,0.03);
+      z-index:2;
+    }
+    .scores{display:flex;justify-content:space-around;gap:10px;font-weight:600}
+    .scores > div{min-width:120px}
+    .red-score{color:var(--accent-red)}
+    .green-score{color:var(--accent-green)}
+    .blue-score{color:var(--accent-blue)}
+    .controls{display:flex;flex-direction:column;align-items:center;gap:12px;padding:18px 0}
+    .battle-btn{
+      background:linear-gradient(90deg,#ff5050,#4bff9e,#54cfff);
+      border:none;padding:12px 22px;border-radius:10px;color:#001; font-weight:700;
+      cursor:pointer; box-shadow:0 10px 28px rgba(0,0,0,0.5);
+      transition:transform .12s ease;
+    }
+    .battle-btn:active{transform:scale(.98)}
+    .winnerText{margin-top:10px;font-size:1.05rem;color:gold;text-shadow:0 0 14px rgba(255,200,80,0.25)}
+    footer{padding:18px 8px;text-align:center;font-size:13px;color:#aaa;border-top:1px solid rgba(255,255,255,0.03);margin-top:26px}
+
+    /* flash classes for winner */
+    .flash-red{box-shadow:0 0 60px 12px rgba(255,60,60,0.12) inset}
+    .flash-green{box-shadow:0 0 60px 12px rgba(100,255,150,0.08) inset}
+    .flash-blue{box-shadow:0 0 60px 12px rgba(110,210,255,0.08) inset}
+
+    /* energy beam basics (light) */
+    .energy-beam{position:absolute;height:6px;border-radius:6px;opacity:0;z-index:1;pointer-events:none;filter:drop-shadow(0 6px 14px rgba(0,0,0,0.6));}
+    .beam-red{background:linear-gradient(90deg,#ff6b6b,#ffb36b)}
+    .beam-green{background:linear-gradient(90deg,#7fffb3,#55ff93)}
+    .beam-blue{background:linear-gradient(90deg,#8fdfff,#4daeff)}
+
+    /* Particle containers are absolute, small count for "light" */
+    .particles{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:3;overflow:visible}
+
+    /* sparks (red) */
+    .spark{
+      position:absolute;
+      width:6px;height:6px;border-radius:50%;
+      background: radial-gradient(circle, #fff 0%, #ffb3b3 30%, #ff4d4d 70%);
+      opacity:0; transform:translateY(0) scale(.6);
+      animation: sparkUp 900ms ease-out forwards;
+      will-change:transform,opacity;
+    }
+    @keyframes sparkUp{
+      0%{opacity:1; transform:translateY(0) scale(.6); filter:blur(0)}
+      60%{opacity:1; transform:translateY(-36px) scale(1)}
+      100%{opacity:0; transform:translateY(-80px) scale(.2); filter:blur(1px)}
+    }
+
+    /* leaves (green) */
+    .leaf{
+      position:absolute;
+      width:14px;height:10px;
+      background:linear-gradient(180deg,#bfffc7,#60ff88);
+      border-radius:6px;
+      transform-origin:center;
+      opacity:0;
+      animation: leafDrop 2400ms linear forwards;
+      will-change:transform,opacity;
+      box-shadow:0 4px 8px rgba(0,0,0,0.35);
+    }
+    @keyframes leafDrop{
+      0%{opacity:0; transform:translateY(-10vh) rotate(0deg) translateX(0)}
+      15%{opacity:1}
+      50%{transform:translateY(35vh) rotate(25deg) translateX(10px)}
+      100%{opacity:0; transform:translateY(85vh) rotate(120deg) translateX(-30px)}
+    }
+
+    /* snow (blue) */
+    .snow{
+      position:absolute;
+      width:8px;height:8px;border-radius:50%;
+      background:linear-gradient(#fff,#dff6ff);
+      opacity:0; transform:translateY(0) scale(.7);
+      animation: snowFall 2600ms linear forwards;
+      will-change:transform,opacity;
+      box-shadow:0 1px 6px rgba(0,0,0,0.35);
+    }
+    @keyframes snowFall{
+      0%{opacity:0; transform:translateY(-6vh) scale(.6)}
+      10%{opacity:1}
+      100%{opacity:0; transform:translateY(80vh) scale(1)}
+    }
+
+    /* small responsive */
+    @media (max-width:880px){
+      .team{width:46%}
+    }
+    @media (max-width:540px){
+      .team{width:100%}
+      .scores{flex-direction:column;gap:8px}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Khangai's Group — Elemental Energy Battle (Light Mode FX)</h1>
+    <p>Nhẹ nhàng — mượt mà — hoành tráng nhưng tối ưu</p>
+  </header>
+
+  <main>
+    <section class="arena" id="arena">
+      <div class="team red" id="redTeam">
+        <h2>🔥 Team Red</h2>
+        <div class="members">
+          <div class="card"><strong>Khangai</strong><div style="font-size:12px;color:#ddd">Leader</div></div>
+          <div class="card"><strong>Bang</strong><div style="font-size:12px;color:#ddd">Warrior</div></div>
+          <div class="card"><strong>Mrudav</strong><div style="font-size:12px;color:#ddd">Tactician</div></div>
+        </div>
+      </div>
+
+      <div class="team green" id="greenTeam">
+        <h2>🌿 Team Green</h2>
+        <div class="members">
+          <div class="card"><strong>Khangai</strong><div style="font-size:12px;color:#ddd">Nature</div></div>
+          <div class="card"><strong>Bang</strong><div style="font-size:12px;color:#ddd">Guardian</div></div>
+          <div class="card"><strong>Mrudav</strong><div style="font-size:12px;color:#ddd">Strategist</div></div>
+        </div>
+      </div>
+
+      <div class="team blue" id="blueTeam">
+        <h2>🌊 Team Blue</h2>
+        <div class="members">
+          <div class="card"><strong>Khangai</strong><div style="font-size:12px;color:#ddd">Wave</div></div>
+          <div class="card"><strong>Bang</strong><div style="font-size:12px;color:#ddd">Calm</div></div>
+          <div class="card"><strong>Mrudav</strong><div style="font-size:12px;color:#ddd">Ice</div></div>
+        </div>
+      </div>
+
+      <!-- particle container -->
+      <div class="particles" id="particles"></div>
+    </section>
+
+    <div class="scoreboard" aria-live="polite">
+      <h3>Bảng điểm</h3>
+      <div class="scores">
+        <div class="red-score">Đỏ 🔥: <span id="redScore">0</span></div>
+        <div class="green-score">Xanh lá 🌿: <span id="greenScore">0</span></div>
+        <div class="blue-score">Xanh dương 🌊: <span id="blueScore">0</span></div>
+      </div>
+
+      <div class="controls">
+        <div class="winnerText" id="winnerText">Chưa có đội thắng...</div>
+        <button class="battle-btn" id="battleBtn">🚀 BẮT ĐẦU TRẬN ĐẤU</button>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    © 2025 Khangai's Group — Elemental Energy Battle (Light FX)
+  </footer>
+
+  <!-- Audio sources (lightweight short files) -->
+  <audio id="battleSound" preload="auto">
+    <source src="https://cdn.pixabay.com/download/audio/2022/10/24/audio_4e51b0e0d7.mp3?filename=fight-12670.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="victorySound" preload="auto">
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_391d5ce9f8.mp3?filename=success-fanfare-trumpets-6185.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    // Scores
+    let redScore = 0, greenScore = 0, blueScore = 0;
+    const redEl = document.getElementById('redScore');
+    const greenEl = document.getElementById('greenScore');
+    const blueEl = document.getElementById('blueScore');
+    const winnerText = document.getElementById('winnerText');
+    const arena = document.getElementById('arena');
+    const particles = document.getElementById('particles');
+    const redTeam = document.getElementById('redTeam');
+    const greenTeam = document.getElementById('greenTeam');
+    const blueTeam = document.getElementById('blueTeam');
+
+    // sound elements
+    const battleSound = document.getElementById('battleSound');
+    const victorySound = document.getElementById('victorySound');
+
+    // create a short energy beam — light style
+    function createBeam(color) {
+      const beam = document.createElement('div');
+      beam.className = 'energy-beam ' + (color === 'red' ? 'beam-red' : color === 'green' ? 'beam-green' : 'beam-blue');
+      // choose vertical position and starting/ending points
+      const top = 18 + Math.random() * 60; // percent
+      beam.style.top = top + '%';
+      // starting left and width determined by color for variety
+      const startLeft = color === 'red' ? '-10%' : color === 'green' ? '45%' : '110%';
+      const endLeft = color === 'red' ? '110%' : color === 'green' ? '-10%' : '-10%';
+      beam.style.left = startLeft;
+      beam.style.width = '0%';
+      beam.style.opacity = '0.95';
+      arena.appendChild(beam);
+
+      // animate (light)
+      requestAnimationFrame(() => {
+        beam.style.transition = 'left 700ms cubic-bezier(.2,.9,.2,1), width 700ms cubic-bezier(.2,.9,.2,1), opacity 200ms';
+        beam.style.left = endLeft;
+        beam.style.width = '120%';
+      });
+
+      // remove after animation
+      setTimeout(() => {
+        beam.style.opacity = '0';
+        setTimeout(()=> beam.remove(), 300);
+      }, 850);
+    }
+
+    /* Light particle effects for each element (small count) */
+
+    // RED: sparks (short lived)
+    function spawnSparks(xRangePct) {
+      const count = 6;
+      for (let i=0;i<count;i++){
+        const s = document.createElement('div');
+        s.className='spark';
+        // position: random within central area or provided range
+        const left = (xRangePct ? (xRangePct + (Math.random()-0.5)*6) : (20 + Math.random()*60));
+        const top = 28 + Math.random()*30;
+        s.style.left = left + '%';
+        s.style.top = top + '%';
+        s.style.transform = `translateY(0) scale(${0.6 + Math.random()*0.6})`;
+        particles.appendChild(s);
+        // remove after animation
+        setTimeout(()=> s.remove(), 950 + Math.random()*120);
+      }
+    }
+
+    // GREEN: leaves (gentle falling)
+    function spawnLeaves(xStartPct) {
+      const count = 5;
+      for (let i=0;i<count;i++){
+        const l = document.createElement('div');
+        l.className='leaf';
+        // vary shape slightly
+        l.style.width = (10 + Math.random()*10) + 'px';
+        l.style.height = (7 + Math.random()*8) + 'px';
+        const left = xStartPct + (Math.random()-0.5)*12;
+        l.style.left = left + '%';
+        l.style.top = (-(10 + Math.random()*8)) + 'vh'; // start above
+        l.style.animationDuration = (2200 + Math.random()*900) + 'ms';
+        l.style.transform = `rotate(${Math.random()*360}deg)`;
+        particles.appendChild(l);
+        setTimeout(()=> l.remove(), 2600 + Math.random()*800);
+      }
+    }
+
+    // BLUE: snow (soft fall)
+    function spawnSnow(xStartPct) {
+      const count = 6;
+      for (let i=0;i<count;i++){
+        const s = document.createElement('div');
+        s.className='snow';
+        const left = xStartPct + (Math.random()-0.5)*18;
+        s.style.left = left + '%';
+        s.style.top = (-(6 + Math.random()*6)) + 'vh';
+        s.style.animationDuration = (2200 + Math.random()*900) + 'ms';
+        particles.appendChild(s);
+        setTimeout(()=> s.remove(), 2600 + Math.random()*700);
+      }
+    }
+
+    // main battle starter
+    function startBattle() {
+      // prevent spam: short cooldown
+      const btn = document.getElementById('battleBtn');
+      btn.disabled = true;
+      btn.style.opacity = '0.88';
+
+      // play light battle sound
+      try{ battleSound.currentTime = 0; battleSound.play().catch(()=>{}); }catch(e){}
+
+      // random beams (light)
+      const beams = 5;
+      const colors = ['red','green','blue'];
+      for (let i=0;i<beams;i++){
+        setTimeout(()=>{
+          const c = colors[Math.floor(Math.random()*3)];
+          createBeam(c);
+          // spawn a few particles along the way for visual
+          if (c==='red') spawnSparks(30 + Math.random()*40);
+          if (c==='green') spawnLeaves(20 + Math.random()*40);
+          if (c==='blue') spawnSnow(25 + Math.random()*40);
+        }, i * 140);
+      }
+
+      // after short delay, decide winner
+      setTimeout(()=> {
+        const winnerIndex = Math.floor(Math.random()*3);
+        announceWinner(winnerIndex);
+        btn.disabled = false;
+        btn.style.opacity = '1';
+      }, 1400);
+    }
+
+    function clearFlashes(){
+      redTeam.classList.remove('flash-red');
+      greenTeam.classList.remove('flash-green');
+      blueTeam.classList.remove('flash-blue');
+    }
+
+    // announce winner, update scoreboard and spawn elemental FX
+    function announceWinner(idx){
+      clearFlashes();
+      // play victory sound
+      try{ victorySound.currentTime = 0; victorySound.play().catch(()=>{}); }catch(e){}
+      if (idx===0){
+        redScore++;
+        redEl.textContent = redScore;
+        winnerText.textContent = '🔥 Team Red chiến thắng!';
+        redTeam.classList.add('flash-red');
+        // small red sparks near red team
+        spawnSparks(20 + Math.random()*18);
+      } else if (idx===1){
+        greenScore++;
+        greenEl.textContent = greenScore;
+        winnerText.textContent = '🌿 Team Green chiến thắng!';
+        greenTeam.classList.add('flash-green');
+        // few leaves
+        spawnLeaves(48 + Math.random()*6);
+      } else {
+        blueScore++;
+        blueEl.textContent = blueScore;
+        winnerText.textContent = '🌊 Team Blue chiến thắng!';
+        blueTeam.classList.add('flash-blue');
+        // soft snow
+        spawnSnow(73 + Math.random()*8);
+      }
+
+      // subtle background tint flash depending on winner (short)
+      const prevBg = document.body.style.background;
+      if (idx===0) document.body.style.background = 'radial-gradient(circle at 30% 20%, rgba(120,20,20,0.14) 0%, #050505 60%)';
+      if (idx===1) document.body.style.background = 'radial-gradient(circle at 50% 40%, rgba(30,120,40,0.12) 0%, #050505 60%)';
+      if (idx===2) document.body.style.background = 'radial-gradient(circle at 70% 30%, rgba(40,110,190,0.12) 0%, #050505 60%)';
+      setTimeout(()=> { document.body.style.background = ''; }, 900);
+    }
+
+    // attach event
+    document.getElementById('battleBtn').addEventListener('click', startBattle);
+
+    // Accessibility: allow space/enter to trigger button when focused
+    document.getElementById('battleBtn').addEventListener('keydown', (e)=>{
+      if(e.key==='Enter' || e.key===' ') { e.preventDefault(); startBattle(); }
+    });
+
+    // small optimization: pre-create a few invisible nodes? (not necessary for light FX)
+  </script>
+</body>
+</html>
