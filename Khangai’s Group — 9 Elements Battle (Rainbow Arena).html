@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Khangai's Group — 9 Elements Battle (Rainbow Arena)</title>
+  <style>
+    :root{
+      --bg:#060608;
+      --panel: rgba(255,255,255,0.03);
+      --glass: rgba(255,255,255,0.04);
+      --gap:14px;
+      --radius:12px;
+      --text:#eef2f7;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Inter, Poppins, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+      background: radial-gradient(circle at 20% 10%, #081018 0%, #060608 40%, #030304 100%);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    header{
+      padding:22px 18px;
+      text-align:center;
+      background: linear-gradient(90deg,#ff4d4d,#60ff88,#66cfff,#ffd66b,#c27eff);
+      color:#021;
+      border-bottom-left-radius:18px;
+      border-bottom-right-radius:18px;
+      box-shadow:0 18px 56px rgba(0,0,0,0.5);
+    }
+    header h1{margin:0;font-size:clamp(18px,3.6vw,34px);letter-spacing:1px}
+    header p{margin:6px 0 0;font-size:13px;color:rgba(0,0,0,0.55)}
+
+    main{padding:20px;max-width:1100px;margin:18px auto}
+
+    /* grid 3x3 */
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:var(--gap);
+      margin-bottom:18px;
+    }
+
+    .tile{
+      background:var(--panel);
+      border-radius:var(--radius);
+      padding:16px;
+      text-align:center;
+      min-height:140px;
+      position:relative;
+      overflow:visible;
+      transition:transform .18s ease, box-shadow .18s ease;
+      border:1px solid rgba(255,255,255,0.03);
+    }
+    .tile:hover{transform:translateY(-6px); box-shadow:0 16px 40px rgba(0,0,0,0.5)}
+    .team-name{font-weight:700;margin:0 0 6px}
+    .team-emoji{font-size:20px; display:block; margin-bottom:6px}
+    .team-desc{font-size:12px; color:rgba(255,255,255,0.75)}
+
+    .score{
+      font-size:28px;
+      font-weight:800;
+      margin-top:10px;
+      letter-spacing:1px;
+    }
+
+    /* colors for each team */
+    .t-red{box-shadow:0 8px 28px rgba(255,80,80,0.06); border-top:4px solid #ff6b6b}
+    .t-green{box-shadow:0 8px 28px rgba(90,255,140,0.04); border-top:4px solid #60ff88}
+    .t-blue{box-shadow:0 8px 28px rgba(110,200,255,0.04); border-top:4px solid #66cfff}
+    .t-yellow{box-shadow:0 8px 28px rgba(255,220,110,0.04); border-top:4px solid #ffd66b}
+    .t-purple{box-shadow:0 8px 28px rgba(180,120,255,0.04); border-top:4px solid #c27eff}
+    .t-cyan{box-shadow:0 8px 28px rgba(120,230,255,0.04); border-top:4px solid #7feaff}
+    .t-orange{box-shadow:0 8px 28px rgba(255,160,90,0.04); border-top:4px solid #ff9a4d}
+    .t-indigo{box-shadow:0 8px 28px rgba(140,120,220,0.04); border-top:4px solid #6a5cff}
+    .t-violet{box-shadow:0 8px 28px rgba(215,140,200,0.04); border-top:4px solid #d084c9}
+
+    /* scoreboard & controls */
+    .controls{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-bottom:16px;
+    }
+    .panel{
+      background:var(--glass);
+      padding:12px 14px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,0.03);
+      box-shadow:0 8px 22px rgba(0,0,0,0.4);
+    }
+    .scores-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .score-pill{min-width:120px;padding:8px 10px;border-radius:8px;background:rgba(0,0,0,0.25);font-weight:700;text-align:center}
+
+    button.btn{
+      background:linear-gradient(90deg,#ffd66b,#60ff88,#66cfff);
+      border:none;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:800;color:#002;
+      box-shadow:0 10px 26px rgba(0,0,0,0.45);
+    }
+    button.secondary{background:linear-gradient(90deg,#ddd,#bbb); color:#111}
+
+    .winner-banner{margin-top:8px;text-align:center;font-weight:800;color:gold;text-shadow:0 0 14px rgba(255,200,80,0.18)}
+
+    footer{margin-top:22px;text-align:center;color:#9aa; font-size:13px}
+
+    /* particle container small and light */
+    .particles{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:9999;overflow:visible}
+    .p{position:absolute;opacity:0;will-change:transform,opacity}
+
+    /* simple particle types */
+    .p-red{width:8px;height:8px;background:radial-gradient(circle,#fff,#ff9b9b,#ff4d4d);border-radius:50%;animation:pr 900ms ease-out forwards}
+    .p-green{width:10px;height:6px;background:linear-gradient(#bfffc7,#60ff88);border-radius:6px;animation:pg 2000ms linear forwards}
+    .p-blue{width:7px;height:7px;background:linear-gradient(#e8fbff,#7fd7ff);border-radius:50%;animation:pb 2000ms linear forwards}
+    .p-yellow{width:8px;height:8px;background:radial-gradient(#fff9d6,#ffd66b);border-radius:50%;animation:py 1100ms ease-out forwards}
+    .p-purple{width:9px;height:9px;background:linear-gradient(#f1e0ff,#c27eff);border-radius:6px;animation:pp 1400ms ease-out forwards}
+    .p-cyan{width:8px;height:8px;background:linear-gradient(#eaffff,#7feaff);border-radius:50%;animation:pc 1700ms linear forwards}
+    .p-orange{width:9px;height:6px;background:linear-gradient(#ffe1d0,#ff9a4d);border-radius:6px;animation:po 1100ms ease-out forwards}
+    .p-indigo{width:9px;height:9px;background:linear-gradient(#e9e4ff,#6a5cff);border-radius:6px;animation:pi 1600ms ease-out forwards}
+    .p-violet{width:9px;height:9px;background:linear-gradient(#ffe7fb,#d084c9);border-radius:6px;animation:pv 1500ms ease-out forwards}
+
+    /* particle anims (light) */
+    @keyframes pr{0%{opacity:1;transform:translateY(0) scale(.7)}60%{opacity:1;transform:translateY(-40px) scale(1)}100%{opacity:0;transform:translateY(-90px) scale(.3)}}
+    @keyframes pg{0%{opacity:1;transform:translateY(0) rotate(0) scale(.9)}100%{opacity:0;transform:translateY(120px) rotate(50deg) scale(.5)}}
+    @keyframes pb{0%{opacity:1;transform:translateY(0) scale(.7)}100%{opacity:0;transform:translateY(100px) scale(1.1)}}
+    @keyframes py{0%{opacity:1;transform:translateY(0) scale(.8)}100%{opacity:0;transform:translateY(-80px) scale(.3)}}
+    @keyframes pp{0%{opacity:1;transform:translateY(0) scale(.8)}100%{opacity:0;transform:translateY(-120px) scale(.4)}}
+    @keyframes pc{0%{opacity:1;transform:translateY(0) scale(.8)}100%{opacity:0;transform:translateY(120px) scale(.6)}}
+    @keyframes po{0%{opacity:1;transform:translateY(0) scale(.8)}100%{opacity:0;transform:translateY(-90px) scale(.35)}}
+    @keyframes pi{0%{opacity:1;transform:translateY(0) scale(.8)}100%{opacity:0;transform:translateY(-120px) scale(.35)}}
+    @keyframes pv{0%{opacity:1;transform:translateY(0) scale(.8)}100%{opacity:0;transform:translateY(-100px) scale(.4)}}
+
+    /* responsive */
+    @media (max-width:900px){ .grid{grid-template-columns:repeat(2,1fr)} }
+    @media (max-width:520px){ .grid{grid-template-columns:repeat(1,1fr)} }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Khangai’s Group — 9 Elements Battle (Rainbow Arena)</h1>
+    <p>9 teams — 1 arena. Click BẮT ĐẦU TRẬN ĐẤU để random winner — điểm được lưu tự động.</p>
+  </header>
+
+  <main>
+    <!-- grid 3x3 -->
+    <section class="grid" id="grid">
+      <div class="tile t-red" data-id="red"><div class="team-emoji">🔥</div><div class="team-name">Red</div><div class="team-desc">Sức nóng & nhiệt huyết</div><div class="score" id="s-red">0</div></div>
+      <div class="tile t-green" data-id="green"><div class="team-emoji">🌿</div><div class="team-name">Green</div><div class="team-desc">Thiên nhiên & phục hồi</div><div class="score" id="s-green">0</div></div>
+      <div class="tile t-blue" data-id="blue"><div class="team-emoji">🌊</div><div class="team-name">Blue</div><div class="team-desc">Sâu sắc & điềm tĩnh</div><div class="score" id="s-blue">0</div></div>
+
+      <div class="tile t-yellow" data-id="yellow"><div class="team-emoji">⚡</div><div class="team-name">Yellow</div><div class="team-desc">Nhanh nhẹn & sáng tạo</div><div class="score" id="s-yellow">0</div></div>
+      <div class="tile t-purple" data-id="purple"><div class="team-emoji">💜</div><div class="team-name">Purple</div><div class="team-desc">Mê hoặc & trí tuệ</div><div class="score" id="s-purple">0</div></div>
+      <div class="tile t-cyan" data-id="cyan"><div class="team-emoji">❄️</div><div class="team-name">Cyan</div><div class="team-desc">Lạnh lùng & tinh khiết</div><div class="score" id="s-cyan">0</div></div>
+
+      <div class="tile t-orange" data-id="orange"><div class="team-emoji">🧡</div><div class="team-name">Orange</div><div class="team-desc">Nhiệt & sáng</div><div class="score" id="s-orange">0</div></div>
+      <div class="tile t-indigo" data-id="indigo"><div class="team-emoji">🔮</div><div class="team-name">Indigo</div><div class="team-desc">Bí ẩn & trực giác</div><div class="score" id="s-indigo">0</div></div>
+      <div class="tile t-violet" data-id="violet"><div class="team-emoji">🌸</div><div class="team-name">Violet</div><div class="team-desc">Thanh lịch & tinh tế</div><div class="score" id="s-violet">0</div></div>
+    </section>
+
+    <div class="controls">
+      <div class="panel">
+        <div class="scores-row">
+          <div class="score-pill">Total: <span id="totalMatches">0</span> trận</div>
+          <div class="score-pill">Top: <span id="topTeam">—</span></div>
+        </div>
+        <div style="margin-top:8px" class="winner-banner" id="winnerBanner">Chưa có đội thắng...</div>
+      </div>
+
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn" id="battleBtn">🚀 BẮT ĐẦU TRẬN ĐẤU</button>
+        <button class="btn secondary" id="resetBtn">🔁 RESET BẢNG ĐIỂM</button>
+        <button class="btn secondary" id="exportBtn">📥 Xuất bảng điểm (.txt)</button>
+      </div>
+    </div>
+
+  </main>
+
+  <div class="particles" id="particles"></div>
+
+  <footer>© 2025 Khangai’s Group — Rainbow Arena. Điểm lưu vào localStorage.</footer>
+
+  <!-- lightweight audio (short) -->
+  <audio id="victory" preload="auto">
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_391d5ce9f8.mp3?filename=success-fanfare-trumpets-6185.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="battleSound" preload="auto">
+    <source src="https://cdn.pixabay.com/download/audio/2022/10/24/audio_4e51b0e0d7.mp3?filename=fight-12670.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    // Teams array
+    const teams = [
+      { id:'red', label:'Red', css:'t-red', particle:'p-red' },
+      { id:'green', label:'Green', css:'t-green', particle:'p-green' },
+      { id:'blue', label:'Blue', css:'t-blue', particle:'p-blue' },
+      { id:'yellow', label:'Yellow', css:'t-yellow', particle:'p-yellow' },
+      { id:'purple', label:'Purple', css:'t-purple', particle:'p-purple' },
+      { id:'cyan', label:'Cyan', css:'t-cyan', particle:'p-cyan' },
+      { id:'orange', label:'Orange', css:'t-orange', particle:'p-orange' },
+      { id:'indigo', label:'Indigo', css:'t-indigo', particle:'p-indigo' },
+      { id:'violet', label:'Violet', css:'t-violet', particle:'p-violet' }
+    ];
+
+    // get DOM refs
+    const totalMatchesEl = document.getElementById('totalMatches');
+    const topTeamEl = document.getElementById('topTeam');
+    const winnerBanner = document.getElementById('winnerBanner');
+    const particles = document.getElementById('particles');
+    const victorySound = document.getElementById('victory');
+    const battleSound = document.getElementById('battleSound');
+
+    // read scores from localStorage or initialize
+    const scores = {};
+    teams.forEach(t => {
+      const v = parseInt(localStorage.getItem('score_' + t.id));
+      scores[t.id] = Number.isFinite(v) ? v : 0;
+      const el = document.getElementById('s-' + t.id);
+      if (el) el.textContent = scores[t.id];
+    });
+
+    // track matches
+    let matches = parseInt(localStorage.getItem('matches')) || 0;
+    totalMatchesEl.textContent = matches;
+
+    // update top
+    function updateTop() {
+      let top = null, topVal = -1;
+      teams.forEach(t => { if (scores[t.id] > topVal){ top = t.label; topVal = scores[t.id]; }});
+      topTeamEl.textContent = top ? `${top} (${topVal})` : '—';
+    }
+    updateTop();
+
+    // utility: spawn light particle effects for the winner
+    function spawnParticles(type, anchorEl) {
+      const rect = (anchorEl && anchorEl.getBoundingClientRect) ? anchorEl.getBoundingClientRect() : {left:window.innerWidth/2, top:window.innerHeight/3, width:100, height:100};
+      const baseX = rect.left + rect.width/2;
+      const baseY = rect.top + rect.height/2;
+      const count = 10 + Math.floor(Math.random()*8);
+
+      for (let i=0;i<count;i++){
+        const p = document.createElement('div');
+        p.className = 'p ' + type;
+        const spreadX = (Math.random()-0.5)*160;
+        const spreadY = (Math.random()-0.2)*120;
+        p.style.left = (baseX + spreadX) + 'px';
+        p.style.top = (baseY + spreadY) + 'px';
+        p.style.opacity = '1';
+        p.style.transform = `translate3d(0,0,0)`;
+        particles.appendChild(p);
+        // remove later
+        setTimeout(()=> p.remove(), 1800 + Math.random()*800);
+      }
+    }
+
+    // flash tile (brief)
+    function flashTile(id){
+      const tile = document.querySelector(`[data-id="${id}"]`);
+      if(!tile) return;
+      tile.classList.add('flash');
+      tile.style.transition = 'box-shadow .35s ease';
+      tile.style.boxShadow = '0 0 60px 18px rgba(255,255,255,0.06) inset';
+      setTimeout(()=> {
+        tile.style.boxShadow = '';
+      }, 700);
+    }
+
+    // start battle: create light beams & particles then pick winner
+    function startBattle(){
+      const btn = document.getElementById('battleBtn');
+      btn.disabled = true;
+      btn.style.transform = 'scale(.98)';
+      try{ battleSound.currentTime = 0; battleSound.play().catch(()=>{}); }catch(e){}
+      // small light beams (CSS-light via spawning particles in different areas)
+      const seq = [0,1,2,3,4];
+      seq.forEach((_,i) => {
+        setTimeout(()=>{
+          // create random particle bursts for visual
+          const idx = Math.floor(Math.random()*teams.length);
+          const t = teams[idx];
+          const el = document.querySelector(`[data-id="${t.id}"]`);
+          spawnParticles(t.particle, el);
+        }, i*140);
+      });
+
+      // final winner after 1.3s
+      setTimeout(()=> {
+        const winnerIdx = Math.floor(Math.random()*teams.length);
+        const winner = teams[winnerIdx];
+        // update scores
+        scores[winner.id] = (scores[winner.id] || 0) + 1;
+        document.getElementById('s-' + winner.id).textContent = scores[winner.id];
+        localStorage.setItem('score_' + winner.id, scores[winner.id]);
+        // update matches and top
+        matches++;
+        localStorage.setItem('matches', matches);
+        totalMatchesEl.textContent = matches;
+        updateTop();
+        // banner + audio + fx
+        winnerBanner.textContent = `🏆 ${winner.label} chiến thắng!`;
+        try{ victorySound.currentTime = 0; victorySound.play().catch(()=>{}); }catch(e){}
+        // spawn winner-specific particles centered on tile
+        const tileEl = document.querySelector(`[data-id="${winner.id}"]`);
+        spawnParticles(winner.particle, tileEl);
+        // subtle highlight on tile
+        tileEl.style.transition = 'transform .2s ease, box-shadow .4s ease';
+        tileEl.style.transform = 'translateY(-8px)';
+        tileEl.style.boxShadow = '0 20px 50px rgba(0,0,0,0.6), 0 0 40px rgba(255,255,255,0.04) inset';
+        setTimeout(()=> { tileEl.style.transform=''; tileEl.style.boxShadow=''; }, 900);
+        btn.disabled = false;
+        btn.style.transform = '';
+      }, 1300);
+    }
+
+    // Reset scores
+    function resetScores(){
+      if (!confirm('Bạn có chắc muốn reset toàn bộ điểm không?')) return;
+      teams.forEach(t => {
+        scores[t.id] = 0;
+        localStorage.removeItem('score_' + t.id);
+        const el = document.getElementById('s-' + t.id);
+        if (el) el.textContent = '0';
+      });
+      matches = 0;
+      localStorage.removeItem('matches');
+      totalMatchesEl.textContent = 0;
+      winnerBanner.textContent = 'Chưa có đội thắng...';
+      updateTop();
+    }
+
+    // Export scores to TXT
+    function exportScoresTXT(){
+      let text = `Khangai's Group — 9 Elements Battle\nExport ngày: ${new Date().toLocaleString()}\n\n`;
+      text += `Total matches: ${matches}\n\nScores:\n`;
+      teams.forEach(t => {
+        text += `${t.label}: ${scores[t.id] || 0}\n`;
+      });
+      // create blob and download
+      const blob = new Blob([text], {type: 'text/plain;charset=utf-8'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `khangai_scores_${(new Date()).toISOString().slice(0,19).replace(/[:T]/g,'-')}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    // attach events
+    document.getElementById('battleBtn').addEventListener('click', startBattle);
+    document.getElementById('resetBtn').addEventListener('click', resetScores);
+    document.getElementById('exportBtn').addEventListener('click', exportScoresTXT);
+
+    // Keyboard accessibility: space/enter triggers battle
+    document.getElementById('battleBtn').addEventListener('keydown', (e)=>{
+      if (e.key==='Enter' || e.key===' ') { e.preventDefault(); startBattle(); }
+    });
+
+    // small: click a tile to manually add +1 for testing (optional)
+    document.querySelectorAll('.tile').forEach(tile => {
+      tile.addEventListener('dblclick', ()=> {
+        const id = tile.getAttribute('data-id');
+        scores[id] = (scores[id]||0) + 1;
+        document.getElementById('s-' + id).textContent = scores[id];
+        localStorage.setItem('score_' + id, scores[id]);
+        matches++;
+        localStorage.setItem('matches', matches);
+        totalMatchesEl.textContent = matches;
+        updateTop();
+        spawnParticles(teams.find(t=>t.id===id).particle, tile);
+        winnerBanner.textContent = `✚ Điểm thủ công cho ${id}`;
+      });
+    });
+
+  </script>
+</body>
+</html>
