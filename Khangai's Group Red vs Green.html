@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Khangai's Group: Red vs Green</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: radial-gradient(circle at center, #000 40%, #111);
+      color: white;
+      overflow-x: hidden;
+    }
+
+    header {
+      text-align: center;
+      padding: 30px;
+      background: linear-gradient(90deg, #b30000, #009933);
+      animation: pulse 3s infinite alternate;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 15px #b30000; }
+      100% { box-shadow: 0 0 25px #00ff66; }
+    }
+
+    header h1 {
+      font-size: 2.5em;
+      margin: 0;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      text-shadow: 0 0 10px #fff;
+    }
+
+    header p {
+      font-size: 1.1em;
+      color: #eee;
+    }
+
+    .arena {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      padding: 50px 20px;
+    }
+
+    .team {
+      width: 40%;
+      min-width: 300px;
+      padding: 30px;
+      border-radius: 20px;
+      text-align: center;
+      transition: transform 0.3s;
+    }
+
+    .team:hover {
+      transform: scale(1.05);
+    }
+
+    .red {
+      background: rgba(255, 0, 0, 0.1);
+      border: 2px solid #ff1a1a;
+      box-shadow: 0 0 20px #ff0000;
+    }
+
+    .green {
+      background: rgba(0, 255, 0, 0.1);
+      border: 2px solid #00ff66;
+      box-shadow: 0 0 20px #00ff66;
+    }
+
+    .team h2 {
+      font-size: 1.8em;
+      margin-bottom: 15px;
+    }
+
+    .members {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .card {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid #666;
+      border-radius: 10px;
+      padding: 15px;
+      width: 120px;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 15px white;
+    }
+
+    .vs {
+      text-align: center;
+      font-size: 3em;
+      font-weight: bold;
+      color: gold;
+      text-shadow: 0 0 15px yellow;
+      animation: glow 1.5s infinite alternate;
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 5px yellow; }
+      to { text-shadow: 0 0 20px orange; }
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: #111;
+      border-top: 2px solid #333;
+      color: #aaa;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Khangai's Group: Red vs Green</h1>
+    <p>🔥 Cuộc chiến huyền thoại giữa hai đội mạnh nhất 🌿</p>
+  </header>
+
+  <div class="arena">
+    <div class="team red">
+      <h2>🔥 Team Red</h2>
+      <div class="members">
+        <div class="card"><h3>Khangai</h3><p>Leader đỏ rực</p></div>
+        <div class="card"><h3>Bang</h3><p>Ngọn lửa chiến đấu</p></div>
+        <div class="card"><h3>Mrudav</h3><p>Chiến lược gia lửa</p></div>
+        <div class="card"><h3>Ali</h3><p>Tia chớp đỏ</p></div>
+      </div>
+    </div>
+
+    <div class="vs">VS</div>
+
+    <div class="team green">
+      <h2>🌿 Team Green</h2>
+      <div class="members">
+        <div class="card"><h3>Khangai</h3><p>Thủ lĩnh xanh lá</p></div>
+        <div class="card"><h3>Bang</h3><p>Sức mạnh thiên nhiên</p></div>
+        <div class="card"><h3>Mrudav</h3><p>Chiến thuật rừng già</p></div>
+        <div class="card"><h3>Ali</h3><p>Người bảo vệ thiên nhiên</p></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    © 2025 Khangai's Group. Red vs Green – Sức mạnh của đoàn kết!
+  </footer>
+</body>
+</html>
